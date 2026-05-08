@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vier in einer Reihe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Vier in einer Reihe</h1>
+    
+    <div id="game-info">
+        <div class="status-bar">
+            <p id="status-text">Du bist am Zug.</p>
+            <button id="rules-button" aria-label="Regeln">?</button>
+        </div>
+        
+        <div class="controls">
+            <button id="reset-button">Neues Spiel</button>
+            <div class="difficulty-wrapper">
+                <label for="difficulty-select">Stärke:</label>
+                <select id="difficulty-select">
+                    <option value="2">Leicht</option>
+                    <option value="5" selected>Normal</option>
+                    <option value="7">Stark</option> 
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="game-board"></div>
+    </div>
+
+    <div id="rules-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Spielregeln</h2>
+            <p><strong>Ziel:</strong> 4 Steine in einer Reihe (horizontal, vertikal, diagonal).</p>
+            <ul>
+                <li>Tippe auf eine Spalte, um einen Stein einzuwerfen.</li>
+                <li>Der Stein fällt auf den tiefsten freien Platz.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <audio id="drop-sound" src="drop.mp3" preload="auto"></audio>
+    <audio id="win-sound" src="win.mp3" preload="auto"></audio>
+    <audio id="lose-sound" src="lose.mp3" preload="auto"></audio>
+    <audio id="draw-sound" src="draw.mp3" preload="auto"></audio>
+
+    <footer>
+        <p>Version 0.08 - Mobile Optimized</p>
+        <a href="https://spiele.frank-kemper.com/" target="_blank" rel="noopener noreferrer">Datenschutz & Impressum</a>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
