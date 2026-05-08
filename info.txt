@@ -1,0 +1,5 @@
+Bei diesem Projekt handelt es sich um eine vom Spielklassikers "4 Gewinnt" inspirierte Version, die du direkt im Browser spielen kannst. Du trittst mit roten Spielsteinen gegen eine künstliche Intelligenz (KI) an, die mit lila Steinen spielt.
+
+Das Spielbrett wird dabei auf moderne Weise durch eine SVG-Grafik erzeugt, die als Maske über den eigentlichen Spielsteinen liegt. Jeder Zug wird von einer Fall-Animation und einem Soundeffekt begleitet.
+
+Die KI ist kein einfacher Gegner: Sie verwendet den Minimax-Algorithmus, um mehrere Züge vorauszudenken und so die strategisch beste Position zu wählen. Ziel des Spiels ist es, als Erster vier deiner Steine horizontal, vertikal oder diagonal in eine Reihe zu bringen. Das Spiel endet bei einem Sieg, einer Niederlage oder einem Unentschieden, kann aber jederzeit per Knopfdruck neu gestartet werden.
