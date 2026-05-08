@@ -1,0 +1,256 @@
+:root {
+    --board-bg: #2c3e50;
+    --player1-color: #e67e22;
+    --player2-color: #9b59b6;
+    --winning-color: #2ecc71;
+    --slot-size: 70px; /* Basisgröße für Berechnung */
+    --slot-margin: 5px;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Besser für Mobile Scrolling */
+    background-color: #f0f0f0;
+    color: #333;
+    margin: 0;
+    padding: 20px 10px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    /* Verhindert "Pull-to-Refresh" auf dem Board, was beim Spielen stört */
+    overscroll-behavior-y: none; 
+}
+
+h1 { 
+    color: var(--board-bg); 
+    font-size: 1.8rem;
+    margin: 0 0 15px 0;
+    text-align: center;
+}
+
+/* --- UI Controls --- */
+#game-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+}
+
+#status-text { 
+    font-size: 1.2em; 
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+#reset-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--board-bg);
+    color: white;
+    cursor: pointer;
+    touch-action: manipulation; /* Verhindert Zoom bei schnellem Tippen */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.difficulty-wrapper {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+#difficulty-select {
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    margin-left: 5px;
+    padding: 5px;
+}
+
+#rules-button {
+    width: 36px;
+    height: 36px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 50%;
+    border: 2px solid var(--board-bg);
+    background-color: white;
+    color: var(--board-bg);
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- Das Spielfeld (Responsive Logic) --- */
+#game-container {
+    /* Zentriert das Board und erlaubt Skalierung */
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow: hidden; /* Wichtig, falls Animationen über den Rand gehen */
+    padding-bottom: 10px;
+}
+
+#game-board {
+    position: relative;
+    /* Damit das Board auf dem Handy nicht breiter als der Screen ist: */
+    transform-origin: top center;
+    /* Standardgröße, wird von JS/CSS Logik unten bestimmt */
+}
+
+/* WICHTIG: Wenn der Bildschirm kleiner als das Board (ca 580px) ist, skalieren wir es runter */
+@media (max-width: 600px) {
+    #game-board {
+        /* Berechnet Skalierungsfaktor basierend auf Bildschirmbreite */
+        /* 580px ist die ungefähre Breite des Boards */
+        zoom: calc(100vw / 600); 
+    }
+    /* Fallback für Firefox, der zoom nicht mag: */
+    @supports not (zoom: 1) {
+        #game-board {
+            transform: scale(calc(100vw / 600));
+        }
+    }
+}
+
+.piece-container {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    background-color: var(--board-bg); /* Hintergrund für die Ränder */
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+
+#board-overlay-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px; /* Damit Ecken auch im Overlay rund sind */
+}
+
+.column {
+    display: flex;
+    flex-direction: column-reverse;
+    margin: 0 var(--slot-margin);
+    cursor: pointer;
+    touch-action: manipulation; /* Verbessert Reaktionszeit auf Handy */
+}
+/* Hover-Effekt nur auf Geräten mit Maus, sonst verwirrend auf Touch */
+@media (hover: hover) {
+    .column:hover {
+        background-color: rgba(255,255,255,0.1);
+        border-radius: 50px;
+    }
+}
+
+.slot {
+    width: var(--slot-size);
+    height: var(--slot-size);
+    margin: var(--slot-margin) 0;
+    position: relative;
+    /* Damit die Steine nicht durch das Board "durchscheinen" beim Fallen */
+    z-index: 0; 
+}
+
+.slot .piece {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    transform: translateY(-600px); /* Startpunkt weiter oben */
+    animation: drop 0.5s cubic-bezier(0.5, 0, 0.5, 1) forwards;
+    box-shadow: inset -2px -2px 5px rgba(0,0,0,0.4); /* 3D Effekt */
+}
+
+@keyframes drop { 
+    0% { transform: translateY(-600px); }
+    60% { transform: translateY(0); }
+    80% { transform: translateY(-20px); } /* Kleiner Bounce Effekt */
+    100% { transform: translateY(0); }
+}
+
+.piece.player1 { background-color: var(--player1-color); }
+.piece.player2 { background-color: var(--player2-color); }
+
+.piece.winning {
+    animation: blink-animation 1s infinite alternate;
+    z-index: 10; /* Über das Overlay heben (optional) */
+}
+
+@keyframes blink-animation {
+    from { box-shadow: 0 0 10px var(--winning-color); filter: brightness(1.2); }
+    to { box-shadow: 0 0 25px var(--winning-color); filter: brightness(1.5); }
+}
+
+/* --- Modal --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 25px;
+    border-radius: 15px;
+    width: 85%;
+    max-width: 450px;
+    position: relative;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 30px;
+    cursor: pointer;
+    line-height: 20px;
+}
+
+footer {
+    margin-top: 30px;
+    font-size: 0.8rem;
+    text-align: center;
+    color: #666;
+}
+footer a { color: #666; }
